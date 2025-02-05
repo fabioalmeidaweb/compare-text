@@ -43,7 +43,7 @@ const App: React.FC = () => {
         <div className="bg-zinc-200 w-300 h-auto rounded-lg p-5">
           {diffResult.map((part, index) => {
             return (
-              <pre
+              <span
                 key={index}
                 className={classNames(
                   part.added ? "bg-green-200" : "",
