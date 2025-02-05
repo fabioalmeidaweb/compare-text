@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Change } from "diff";
 import { TextArea } from "./components/TextArea";
 import classNames from "classnames";
+import sanitizeHtml from "sanitize-html";
+import { escapeHtml } from "./utils/scapeHtml";
 
 const App: React.FC = () => {
   const [text1, setText1] = useState<string>("");
@@ -20,6 +22,12 @@ const App: React.FC = () => {
     };
   };
 
+  const handleClean = () => {
+    setText1("");
+    setText2("");
+    setDiffResult([]);
+  };
+
   return (
     <main className="flex flex-col gap-5 w-full h-screen  p-10 font-mono">
       <header className="m-10">
@@ -30,17 +38,23 @@ const App: React.FC = () => {
         <TextArea text={text2} onChange={setText2} />
       </section>
 
-      <section className="flex justify-center m-10">
+      <section className="flex justify-center gap-5 m-10">
         <button
           className="border-2 border-solid rounded-lg text-2xl w-32"
           onClick={handleCompare}
         >
           Compare
         </button>
+        <button
+          className="border-2 border-solid rounded-lg text-2xl w-32"
+          onClick={handleClean}
+        >
+          Reset
+        </button>
       </section>
 
       <section className="flex justify-center m-10">
-        <div className="bg-zinc-200 w-300 h-auto rounded-lg p-5">
+        <pre className="bg-zinc-200 w-300 h-auto rounded-lg p-5">
           {diffResult.map((part, index) => {
             return (
               <span
@@ -52,12 +66,17 @@ const App: React.FC = () => {
                   "whitespace-pre-wrap"
                 )}
                 dangerouslySetInnerHTML={{
-                  __html: part.value.replace(/\n/g, "<br />"),
+                  __html: sanitizeHtml(
+                    escapeHtml(part.value).replace(/\n/g, "<br />"),
+                    {
+                      allowedTags: ["br"],
+                    }
+                  ),
                 }}
               />
             );
           })}
-        </div>
+        </pre>
       </section>
     </main>
   );
